@@ -2,7 +2,7 @@
 
 a [Spark](https://spark.apache.org/)-like Decentralized Data Processing Engine built on top of [Dat](dat-data.com)
 
-**This is only a proof-of-concept now. We welcome any idea/suggestion.**
+**This is a work-in-progress. Any idea/suggestion is welcome**
 
 HyperSpark allows us to:
 
