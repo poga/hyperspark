@@ -5,12 +5,13 @@ const flatten = require('flatten')
 // a RDD with a binding to existed hyperdrive will expose an stream to provide data on demand
 //
 // every RDD should be content addressable
-function RDD (parent, archive, transform) {
-  if (!(this instanceof RDD)) return new RDD(parent, archive)
+function RDD (parent, archive, transform, parser) {
+  if (!(this instanceof RDD)) return new RDD(parent, archive, transform, parser)
 
   this._transform = transform
   this._parent = parent
   this._archive = archive
+  this._parser = parser || parsers.csv
 }
 
 // do action
@@ -39,7 +40,7 @@ RDD.prototype._values = function () {
     return this._parent._values()
   }
 
-  return _(parsers.csv(this._archive))
+  return _(this._parser(this._archive))
 }
 
 module.exports = RDD

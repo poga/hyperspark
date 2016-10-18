@@ -2,7 +2,6 @@ const RDD = require('..')
 const hyperdrive = require('hyperdrive')
 const memdb = require('memdb')
 const tape = require('tape')
-const toStream = require('string-to-stream')
 const fs = require('fs')
 const _ = require('highland')
 
