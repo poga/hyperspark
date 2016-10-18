@@ -23,12 +23,23 @@ source.finalize(() => {
 
   tape('take 1', function (t) {
     result.action(_.take(1))
-      .each(x => t.same(x, 3))
-      .done(t.end)
+      .toArray(res => {
+        console.log(res)
+        t.end()
+      })
   })
 
   tape('no action', function (t) {
     result.action()
+      .sortBy((a, b) => { return a - b })
+      .toArray(res => {
+        t.same(res, [3, 5, 7, 9, 11, 13, 15, 17, 19, 21])
+        t.end()
+      })
+  })
+
+  tape('take all', function (t) {
+    result.action(_.take(null))
       .sortBy((a, b) => { return a - b })
       .toArray(res => {
         t.same(res, [3, 5, 7, 9, 11, 13, 15, 17, 19, 21])

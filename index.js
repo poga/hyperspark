@@ -1,6 +1,4 @@
-const _ = require('highland')
 const parsers = require('./parser')
-const flatten = require('flatten')
 
 // a RDD with a binding to existed hyperdrive will expose an stream to provide data on demand
 //
@@ -16,11 +14,8 @@ function RDD (parent, archive, transform, parser) {
 
 // do action
 RDD.prototype.action = function (action) {
-  var streams = flatten(this._applyTransform()).concat([action]).filter(x => x)
-  // console.log(streams)
-  var pipeline = _.pipeline.apply(this, streams)
-
-  return this._values().pipe(pipeline)
+  action = action || noop
+  return action(this._applyTransform())
 }
 
 RDD.prototype.transform = function (transform) {
@@ -29,10 +24,14 @@ RDD.prototype.transform = function (transform) {
 
 RDD.prototype._applyTransform = function () {
   if (this._parent) {
-    return [this._parent._applyTransform(), this._transform]
+    return this._transform(this._parent._applyTransform())
   }
 
-  return [this._transform]
+  if (this._transform) {
+    return this._transform(this._values())
+  }
+
+  return this._values()
 }
 
 RDD.prototype._values = function () {
@@ -40,7 +39,11 @@ RDD.prototype._values = function () {
     return this._parent._values()
   }
 
-  return _(this._parser(this._archive))
+  return this._parser(this._archive)
 }
 
 module.exports = RDD
+
+function noop (x) {
+  return x
+}
