@@ -18,16 +18,21 @@ const hyperdrive = require('hyperdrive')
 const memdb = require('memdb')
 var drive = hyperdrive(memdb())
 
-const spark = require('hyperspark')
-const hs = spark(drive)
+const RDD = require('hyperspark')
 // create a new hyperspark RDD point to a existing dat archive
-var rdd = hs.RDD(<DAT-ARCHIVE-KEY>)
-var counts = rdd.flatMap(line => line.split(' '))
-                .map(word => [word, 1])
-                .reduceByKey((a, b) => a + b)
+var archive = drive.createArchive(<DAT-ARCHIVE-KEY>)
+var result = RDD(null, archive, null, parsers.word)
+  .transform(_.map(word => [word, 1]))
+  .transform(_.reduce({}, (sum, x) => {
+    if (!sum[x[0]]) sum[x[0]] = 0
+    sum[x[0]] += x[1]
+    return sum
+  }))
 
 // actual run
-console.log(counts.collect())
+counts.action().toArray(res => {
+  // res = [{bar: 2, baz: 1, foo: 1}]
+})
 ```
 
 ## TODO

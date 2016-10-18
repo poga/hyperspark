@@ -26,7 +26,6 @@ source.finalize(() => {
 
   tape('word count', function (t) {
     result.action()
-      .sort()
       .toArray(res => {
         t.same(res, [{bar: 2, baz: 1, foo: 1}])
         t.end()
