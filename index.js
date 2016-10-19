@@ -1,25 +1,32 @@
-const parsers = require('./parser')
+const through2 = require('through2')
+const _ = require('highland')
 
-// a RDD with a binding to existed hyperdrive will expose an stream to provide data on demand
-//
-// every RDD should be content addressable
-function RDD (parent, archive, transform, parser) {
-  if (!(this instanceof RDD)) return new RDD(parent, archive, transform, parser)
+function RDD (archive, parent, transform) {
+  if (!(this instanceof RDD)) return new RDD(archive, parent, transform)
 
-  this._transform = transform
-  this._parent = parent
   this._archive = archive
-  this._parser = parser || parsers.csv
+  this._parent = parent
+  this._transform = transform // transform is a stream, which will be applied to each file
 }
 
-// do action
-RDD.prototype.action = function (action) {
-  action = action || noop
-  return action(this._applyTransform())
+RDD.prototype.type = function () {
+  return this._transform ? this._transform.returnType : 'T'
 }
 
 RDD.prototype.transform = function (transform) {
-  return new RDD(this, null, transform)
+  // if (!transform.accept(this.type())) throw new Error(`TypeError: ${transform.name} cannot be used on ${this.type()}`)
+
+  return new RDD(null, this, transform)
+}
+
+// do action
+RDD.prototype.action = function (fileAction, totalAction) {
+  // TODO: properly convert stream of stream to flattened stream
+  return this._applyTransform().pipe(fileAction).flatten().pipe(totalAction)
+}
+
+RDD.prototype.partition = function (archive, partitioner) {
+  return partitioner(archive)(this._applyTransform())
 }
 
 RDD.prototype._applyTransform = function () {
@@ -27,23 +34,33 @@ RDD.prototype._applyTransform = function () {
     return this._transform(this._parent._applyTransform())
   }
 
-  if (this._transform) {
-    return this._transform(this._values())
-  }
-
-  return this._values()
+  return this._eachFile()
 }
 
-RDD.prototype._values = function () {
-  if (this._parent) {
-    return this._parent._values()
-  }
-
-  return this._parser(this._archive)
+// eachFile returns a stream of stream, each inner stream is a fileReadStream
+// all stream is wrapped with highland
+RDD.prototype._eachFile = function () {
+  var archive = this._archive
+  return _(archive.list({live: false}).pipe(through2.obj(function (entry, enc, cb) {
+    this.push(_(archive.createFileReadStream(entry)))
+    cb()
+  })))
 }
 
 module.exports = RDD
 
-function noop (x) {
-  return x
+
+function KeyPartitioner (archive) {
+  var partitions = {}
+  return _.map(file => {
+    file.map(data => {
+      _([data]).pipe(getPartition(data.key))
+    })
+  })
+
+  function getPartition (key) {
+    if (!partitions[key]) partitions[key] = archive.createFileReadStream(`${key}`)
+
+    return partitions[key]
+  }
 }
