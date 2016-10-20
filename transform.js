@@ -1,20 +1,22 @@
 const _ = require('highland')
 const CSV = require('csv-parser')
 
-function map (f) {
-  // first map map each file
-  // second map map each line (or each data)
-  return _.map(file => file.map(f))
-}
-
-// TODO: fix this, properly return only n item.
-// (might require multiple file)
+// actions
+// action is a stream which will consume all transformation
 function fileTake (n) {
   return _.pipeline(_.map(file => _.take(n)(file)))
 }
 
 function take (n) {
   return _.pipeline(_.take(n))
+}
+
+// transforms
+// transform is partial-applied highland function to enable lazy evaluation
+function map (f) {
+  // first map map each file
+  // second map map each line (or each data)
+  return _.map(file => file.map(f))
 }
 
 function csv () {
