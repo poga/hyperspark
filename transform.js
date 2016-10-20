@@ -3,18 +3,17 @@ const _ = require('highland')
 const CSV = require('csv-parser')
 
 // transforms
+// file is a fileReadStream wrapped with highland
 function map (f) {
-  // first map map each file
-  // second map map each line (or each data)
-  return _.map(file => file.map(f))
+  return file => file.map(f)
 }
 
 function csv () {
-  return _.map(file => _(file.pipe(CSV())))
+  return file => _(file.pipe(CSV()))
 }
 
 function splitBy (sep) {
-  return _.map(file => file.splitBy(sep))
+  return file => file.splitBy(sep)
 }
 
 module.exports = {map: map, take: _.take, csv: csv, splitBy: splitBy, reduce: _.reduce}

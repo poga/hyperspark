@@ -33,7 +33,7 @@ RDD.prototype.partition = function (archive, partitioner) {
 
 RDD.prototype._applyTransform = function () {
   if (this._parent) {
-    return this._transform(this._parent._applyTransform())
+    return mapToFile(this._transform)(this._parent._applyTransform())
   }
 
   return this._eachFile()
@@ -72,4 +72,8 @@ function mapToFilePipe (action) {
 
 function pipe (action) {
   return _.pipeline(action)
+}
+
+function mapToFile (transform) {
+  return _.map(file => transform(file))
 }
