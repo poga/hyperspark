@@ -49,7 +49,6 @@ RDD.prototype._eachFile = function () {
 
 module.exports = RDD
 
-
 function KeyPartitioner (archive) {
   var partitions = {}
   return _.map(file => {

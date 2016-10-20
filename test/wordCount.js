@@ -3,8 +3,7 @@ const hyperdrive = require('hyperdrive')
 const memdb = require('memdb')
 const tape = require('tape')
 const fs = require('fs')
-const _ = require('highland')
-const parsers = require('../parser')
+const _ = require('../transform')
 
 var drive = hyperdrive(memdb())
 var source = drive.createArchive()
@@ -16,7 +15,8 @@ source.finalize(() => {
   var peer = drive2.createArchive(source.key, {sparse: true})
   replicate(source, peer)
 
-  var result = RDD(null, peer, null, parsers.word)
+  var result = RDD(peer)
+    .transform(_.splitBy(/[\n\s]/))
     .transform(_.map(word => [word, 1]))
     .transform(_.reduce({}, (sum, x) => {
       if (!sum[x[0]]) sum[x[0]] = 0
@@ -25,8 +25,9 @@ source.finalize(() => {
     }))
 
   tape('word count', function (t) {
-    result.action()
+    result.action(_.fileTake(null), _.take(null))
       .toArray(res => {
+        console.log(res.toString())
         t.same(res, [{bar: 2, baz: 1, foo: 1}])
         t.end()
       })
