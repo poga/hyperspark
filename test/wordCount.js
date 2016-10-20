@@ -17,17 +17,18 @@ source.finalize(() => {
 
   var result = RDD(peer)
     .transform(_.splitBy(/[\n\s]/))
-    .transform(_.map(word => [word, 1]))
-    .transform(_.reduce({}, (sum, x) => {
-      if (!sum[x[0]]) sum[x[0]] = 0
-      sum[x[0]] += x[1]
-      return sum
-    }))
+    .transform(_.map(word => kv(word, 1)))
+
+  var reducer = (sum, x) => {
+    if (x.k === '') return sum
+    if (!sum[x.k]) sum[x.k] = 0
+    sum[x.k] += x.v
+    return sum
+  }
 
   tape('word count', function (t) {
-    result.action(_.fileTake(null), _.take(null))
+    result.action(_.fileTake(null), _.reduce({}, reducer))
       .toArray(res => {
-        console.log(res.toString())
         t.same(res, [{bar: 2, baz: 1, foo: 1}])
         t.end()
       })
@@ -37,4 +38,8 @@ source.finalize(() => {
 function replicate (a, b) {
   var stream = a.replicate()
   stream.pipe(b.replicate()).pipe(stream)
+}
+
+function kv (k, v) {
+  return {k: k, v: v}
 }

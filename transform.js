@@ -11,6 +11,10 @@ function take (n) {
   return _.pipeline(_.take(n))
 }
 
+function reduce (init, reducer) {
+  return _.pipeline(_.reduce(init, reducer))
+}
+
 // transforms
 // transform is partial-applied highland function to enable lazy evaluation
 function map (f) {
@@ -27,4 +31,4 @@ function splitBy (sep) {
   return _.map(file => file.splitBy(sep))
 }
 
-module.exports = {map: map, take: take, csv: csv, fileTake: fileTake, splitBy: splitBy}
+module.exports = {map: map, take: take, csv: csv, fileTake: fileTake, splitBy: splitBy, reduce: reduce}
