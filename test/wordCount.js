@@ -3,7 +3,8 @@ const hyperdrive = require('hyperdrive')
 const memdb = require('memdb')
 const tape = require('tape')
 const fs = require('fs')
-const _ = require('../transform')
+const tf = require('../transform')
+const a = require('../action')
 
 var drive = hyperdrive(memdb())
 var source = drive.createArchive()
@@ -16,18 +17,12 @@ source.finalize(() => {
   replicate(source, peer)
 
   var result = RDD(peer)
-    .transform(_.splitBy(/[\n\s]/))
-    .transform(_.map(word => kv(word, 1)))
-
-  var reducer = (sum, x) => {
-    if (x.k === '') return sum
-    if (!sum[x.k]) sum[x.k] = 0
-    sum[x.k] += x.v
-    return sum
-  }
+    .transform(tf.splitBy(/[\n\s]/))
+    .transform(tf.filter(x => x !== ''))
+    .transform(tf.map(word => kv(word, 1)))
 
   tape('word count', function (t) {
-    result.action(_.take(null), _.reduce({}, reducer))
+    result.action(a.take(null), a.reduceByKey((x, y) => x + y))
       .toArray(res => {
         t.same(res, [{bar: 2, baz: 1, foo: 1}])
         t.end()

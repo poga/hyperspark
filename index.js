@@ -20,6 +20,7 @@ RDD.prototype.transform = function (transform) {
 }
 
 // do action
+// evaluation transformation chain. Then apply a transform to each file, then apply a transform to flattened data
 RDD.prototype.action = function (fileAction, totalAction) {
   return this._applyTransform()
     .pipe(mapToFilePipe(fileAction))
@@ -31,6 +32,7 @@ RDD.prototype.partition = function (archive, partitioner) {
   return partitioner(archive)(this._applyTransform())
 }
 
+// build a transformation chain without evaluating it
 RDD.prototype._applyTransform = function () {
   if (this._parent) {
     return mapToFile(this._transform)(this._parent._applyTransform())
