@@ -1,22 +1,8 @@
+// action & transform is partial-applied highland function to enable lazy evaluation
 const _ = require('highland')
 const CSV = require('csv-parser')
 
-// actions
-// action is a stream which will consume all transformation
-function fileTake (n) {
-  return _.pipeline(_.map(file => _.take(n)(file)))
-}
-
-function take (n) {
-  return _.pipeline(_.take(n))
-}
-
-function reduce (init, reducer) {
-  return _.pipeline(_.reduce(init, reducer))
-}
-
 // transforms
-// transform is partial-applied highland function to enable lazy evaluation
 function map (f) {
   // first map map each file
   // second map map each line (or each data)
@@ -31,4 +17,4 @@ function splitBy (sep) {
   return _.map(file => file.splitBy(sep))
 }
 
-module.exports = {map: map, take: take, csv: csv, fileTake: fileTake, splitBy: splitBy, reduce: reduce}
+module.exports = {map: map, take: _.take, csv: csv, splitBy: splitBy, reduce: _.reduce}

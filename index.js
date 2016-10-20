@@ -21,8 +21,10 @@ RDD.prototype.transform = function (transform) {
 
 // do action
 RDD.prototype.action = function (fileAction, totalAction) {
-  // TODO: properly convert stream of stream to flattened stream
-  return this._applyTransform().pipe(fileAction).flatten().pipe(totalAction)
+  return this._applyTransform()
+    .pipe(mapToFilePipe(fileAction))
+    .flatten()
+    .pipe(pipe(totalAction))
 }
 
 RDD.prototype.partition = function (archive, partitioner) {
@@ -62,4 +64,12 @@ function KeyPartitioner (archive) {
 
     return partitions[key]
   }
+}
+
+function mapToFilePipe (action) {
+  return pipe(_.map(file => action(file)))
+}
+
+function pipe (action) {
+  return _.pipeline(action)
 }

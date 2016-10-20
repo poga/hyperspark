@@ -23,7 +23,7 @@ source.finalize(() => {
     .transform(_.map(x => x + 1))
 
   tape('take 1', function (t) {
-    result.action(_.fileTake(1), _.take(1))
+    result.action(_.take(1), _.take(1))
       .toArray(res => {
         t.same(res, [3])
         t.end()
@@ -31,7 +31,7 @@ source.finalize(() => {
   })
 
   tape('take all', function (t) {
-    result.action(_.fileTake(null), _.take(null))
+    result.action(_.take(null), _.take(null))
       .sortBy((a, b) => { return a - b })
       .toArray(res => {
         t.same(res, [3, 5, 7, 9, 11, 13, 15, 17, 19, 21])

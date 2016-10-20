@@ -27,7 +27,7 @@ source.finalize(() => {
   }
 
   tape('word count', function (t) {
-    result.action(_.fileTake(null), _.reduce({}, reducer))
+    result.action(_.take(null), _.reduce({}, reducer))
       .toArray(res => {
         t.same(res, [{bar: 2, baz: 1, foo: 1}])
         t.end()
