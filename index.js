@@ -28,10 +28,6 @@ RDD.prototype.action = function (fileAction, totalAction) {
     .pipe(pipe(totalAction))
 }
 
-RDD.prototype.partition = function (archive, partitioner) {
-  return partitioner(archive)(this._applyTransform())
-}
-
 // build a transformation chain without evaluating it
 RDD.prototype._applyTransform = function () {
   if (this._parent) {
@@ -52,21 +48,6 @@ RDD.prototype._eachFile = function () {
 }
 
 module.exports = RDD
-
-function KeyPartitioner (archive) {
-  var partitions = {}
-  return _.map(file => {
-    file.map(data => {
-      _([data]).pipe(getPartition(data.key))
-    })
-  })
-
-  function getPartition (key) {
-    if (!partitions[key]) partitions[key] = archive.createFileReadStream(`${key}`)
-
-    return partitions[key]
-  }
-}
 
 function mapToFilePipe (action) {
   return pipe(_.map(file => action(file)))
