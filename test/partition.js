@@ -22,9 +22,9 @@ source.finalize(() => {
     .transform(tf.csv())
     .transform(tf.map(row => parseInt(row['value'], 10)))
 
-  var newArchive = drive2.createArchive()
 
   tape('partition', function (t) {
+    var newArchive = drive2.createArchive()
     result.partition(x => x % 2, newArchive, (next) => {
       next
         .action(_.take(null), _.take(null))
@@ -33,6 +33,46 @@ source.finalize(() => {
           t.end()
         })
     })
+  })
+
+  tape('get', function (t) {
+    var newArchive = drive2.createArchive()
+    result.partition(x => x % 2, newArchive, (next) => {
+      next
+        .get('0')
+        .action(_.take(null), _.take(null))
+        .toArray(x => {
+          t.same(x.map(b => b.toString()), ['2\n4\n6\n8\n10'])
+          t.end()
+        })
+    })
+  })
+
+  tape('select', function (t) {
+    var newArchive = drive2.createArchive()
+    result.partition(x => x % 3, newArchive, (next) => {
+      next
+        .select(x => parseInt(x.name) < 2) // x % 3 < 2
+        .action(_.take(null), _.take(null))
+        .toArray(x => {
+          t.same(x.map(b => b.toString()), ['1\n4\n7\n10', '3\n6\n9'])
+          t.end()
+        })
+    })
+  })
+
+  tape('get only works on RDD before transform', function (t) {
+    t.throws(() => {
+      result.get('test.csv')
+    })
+    t.end()
+  })
+
+  tape('select only works on RDD before transform', function (t) {
+    t.throws(() => {
+      result.select(x => x.name === 'test.csv')
+    })
+    t.end()
   })
 })
 

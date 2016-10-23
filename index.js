@@ -7,10 +7,7 @@ function RDD (archive, parent, transform) {
   this._archive = archive
   this._parent = parent
   this._transform = transform // transform is a stream, which will be applied to each file
-}
-
-RDD.prototype.type = function () {
-  return this._transform ? this._transform.returnType : 'T'
+  this._selector = all
 }
 
 RDD.prototype.partition = function (f, outArchive, cb) {
@@ -37,6 +34,20 @@ RDD.prototype.partition = function (f, outArchive, cb) {
   }
 }
 
+RDD.prototype.get = function (filename) {
+  if (this._transform) throw new Error('Cannot get file after transformation')
+
+  this._selector = x => x.name === filename
+  return this
+}
+
+RDD.prototype.select = function (selector) {
+  if (this._transform) throw new Error('Cannot select files after transformation')
+
+  this._selector = selector
+  return this
+}
+
 RDD.prototype.transform = function (transform) {
   return new RDD(this._archive, this, transform)
 }
@@ -56,15 +67,15 @@ RDD.prototype._applyTransform = function () {
     return mapToFile(this._transform)(this._parent._applyTransform())
   }
 
-  return this._eachFile()
+  return this._eachFile(this._selector)
 }
 
 // eachFile returns a stream of stream, each inner stream is a fileReadStream
 // all stream is wrapped with highland
-RDD.prototype._eachFile = function () {
+RDD.prototype._eachFile = function (filter) {
   var archive = this._archive
   return _(archive.list({live: false}).pipe(through2.obj(function (entry, enc, cb) {
-    this.push(_(archive.createFileReadStream(entry)))
+    if (filter(entry)) this.push(_(archive.createFileReadStream(entry)))
     cb()
   })))
 }
@@ -81,4 +92,8 @@ function pipe (action) {
 
 function mapToFile (transform) {
   return _.map(file => transform(file))
+}
+
+function all (x) {
+  return true
 }
