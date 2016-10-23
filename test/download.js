@@ -3,8 +3,6 @@ const hyperdrive = require('hyperdrive')
 const memdb = require('memdb')
 const tape = require('tape')
 const fs = require('fs')
-const tf = require('../transform')
-const a = require('../action')
 const _ = require('highland')
 
 var drive = hyperdrive(memdb())
