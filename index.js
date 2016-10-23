@@ -13,10 +13,33 @@ RDD.prototype.type = function () {
   return this._transform ? this._transform.returnType : 'T'
 }
 
-RDD.prototype.transform = function (transform) {
-  // if (!transform.accept(this.type())) throw new Error(`TypeError: ${transform.name} cannot be used on ${this.type()}`)
+RDD.prototype.partition = function (f, outArchive, cb) {
+  var partitions = {}
 
-  return new RDD(null, this, transform)
+  this
+    .action(_.take(null), _.map(x => { return {p: f(x), v: x} }))
+    .each(x => getPartition(x.p).write(`${x.v}`))
+    .done(endPartitions)
+
+  function getPartition (key) {
+    if (!partitions[key]) {
+      partitions[key] = _.pipeline(
+        _.intersperse('\n'),
+        outArchive.createFileWriteStream(`${key}`)
+      )
+    }
+    return partitions[key]
+  }
+
+  function endPartitions () {
+    Object.keys(partitions).forEach(k => partitions[k].end())
+    console.log('partition done')
+    outArchive.finalize(() => { cb(new RDD(outArchive)) })
+  }
+}
+
+RDD.prototype.transform = function (transform) {
+  return new RDD(this._archive, this, transform)
 }
 
 // do action
