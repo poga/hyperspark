@@ -33,7 +33,6 @@ RDD.prototype.partition = function (f, outArchive, cb) {
 
   function endPartitions () {
     Object.keys(partitions).forEach(k => partitions[k].end())
-    console.log('partition done')
     outArchive.finalize(() => { cb(new RDD(outArchive)) })
   }
 }
