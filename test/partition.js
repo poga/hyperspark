@@ -22,7 +22,6 @@ source.finalize(() => {
     .transform(tf.csv())
     .transform(tf.map(row => parseInt(row['value'], 10)))
 
-
   tape('partition', function (t) {
     var newArchive = drive2.createArchive()
     result.partition(x => x % 2, newArchive, (next) => {
