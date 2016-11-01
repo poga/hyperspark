@@ -18,16 +18,16 @@ word-counting:
 ```js
 const hyperdrive = require('hyperdrive')
 const memdb = require('memdb')
-const dt = require('dat-transform')
+const {RDD, kv} = require('dat-transform')
 
 var drive = hyperdrive(memdb())
 var archive = drive.createArchive(<DAT-ARCHIVE-KEY>)
 
 // define transforms
-var result = dt.RDD(archive)
+var result = RDD(archive)
   .splitBy(/[\n\s]/)
   .filter(x => x !== '')
-  .map(word => dt.kv(word, 1))
+  .map(word => kv(word, 1))
 
 // actual run(action)
 result.reduceByKey((x, y) => x + y)
