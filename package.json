@@ -13,6 +13,6 @@
   "author": "Poga Po<poga.bahamut@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "dat-transform": "^0.0.1"
+    "dat-transform": "^0.1.1"
   }
 }
