@@ -1,15 +1,16 @@
 # Hyperspark
 
-a [Spark](https://spark.apache.org/)-like decentralized data processing platform built on top of [Dat](dat-data.com)
+Hyperspark is a decentralized data processing tool for [Dat](http://dat-data.com). Inspired by [Spark](https://spark.apache.org/)
 
 **This is a work-in-progress. Any idea/suggestion is welcome**
 
-HyperSpark allows us to:
+[![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
+### Key Features
 
 * Reuse intermediate data.
 * Minimize bandwidth usage.
 * Share computation power.
-* Better reproduciblilty, quality, consumability, discoverability, and learning for knowledge.
 
 ## How to use
 
@@ -19,11 +20,13 @@ It's simple! Just share your data with dat: `dat .`
 
 #### Data Scientist
 
-Define your ideas with transforms and actions without worrying about fetching and storing data.
+Define your ideas with [transforms and actions](https://github.com/poga/dat-transform) without worrying about fetching and storing data.
 
 #### Computation Provider
 
-Run transformations defined by scientists. Cache and share intermediate data so everyone can re-use these research without having their own computation cluster.
+Run transformations defined by researchers. Cache and share intermediate data so everyone can re-use the knowledge without having their own computation cluster.
+
+---
 
 ## Synopsis
 
