@@ -8,6 +8,22 @@ HyperSpark allows us to:
 
 * Reuse intermediate data.
 * Minimize bandwidth usage.
+* Share computation power.
+* Better reproduciblilty, quality, consumability, discoverability, and learning for knowledge.
+
+## How to use
+
+#### Data owner
+
+It's simple! Just share your data with dat: `dat .`
+
+#### Data Scientist
+
+Define your ideas with transforms and actions without worrying about fetching and storing data.
+
+#### Computation Provider
+
+Run transformations defined by scientists. Cache and share intermediate data so everyone can re-use these research without having their own computation cluster.
 
 ## Synopsis
 
