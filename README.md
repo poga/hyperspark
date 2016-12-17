@@ -4,9 +4,7 @@ Hyperspark is a decentralized data processing tool for [Dat](http://dat-data.com
 
 **This is a work-in-progress. Any idea/suggestion is welcome**
 
-[![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-
-### Key Features
+### Goal
 
 * Reuse intermediate data.
 * Minimize bandwidth usage.
@@ -55,6 +53,9 @@ result.reduceByKey((x, y) => x + y)
   })
 ```
 
-## TODO
+## Related Modules
 
-* [  ] implement it
+* RDD-style data transformation with js. [dat-transform](https://github.com/poga/dat-transform)
+* Analyze data inside dat archive with RDD-style API. [dat-ipynb](https://github.com/poga/dat-ipynb-demo), using [nel](https://github.com/poga/nel)
+* Convert iPython Notebook to Markdown. [ipynb2md](https://github.com/poga/ipynb2md)
+* Attach file to markdown with dat. [markdown-attachment-p2p](https://github.com/poga/markdown-attachment-p2p)
