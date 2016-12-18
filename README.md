@@ -33,15 +33,11 @@ define RDD on dat with [dat-transform](https://github.com/poga/dat-transform)
 word-counting:
 
 ```js
-const hyperdrive = require('hyperdrive')
-const memdb = require('memdb')
-const {RDD, kv} = require('dat-transform')
-
-var drive = hyperdrive(memdb())
-var archive = drive.createArchive(<DAT-ARCHIVE-KEY>)
+const hs = require('hyperspark')
+var rdd = hs(<DAT-ARCHIVE-KEY>)
 
 // define transforms
-var result = RDD(archive)
+var result = rdd
   .splitBy(/[\n\s]/)
   .filter(x => x !== '')
   .map(word => kv(word, 1))
