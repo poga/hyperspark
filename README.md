@@ -2,6 +2,8 @@
 
 Hyperspark is a decentralized data processing tool for [Dat](http://dat-data.com). Inspired by [Spark](https://spark.apache.org/)
 
+Basically, it's just a fancy wrapper around [Dat Archive](datproject.org)
+
 **This is a work-in-progress. Any idea/suggestion is welcome**
 
 ### Goal
